@@ -74,7 +74,7 @@ class AirbnbCrawl(object):
 
     def screenshot(self, image_name):
         self.go_top()
-        self.driver.save_screenshot(image_name)
+        self.driver.save_screenshot('Airbnbb_'+image_name)
 
     def parse_aptos(self):
         html = parser.fromstring(self.driver.page_source)
@@ -102,7 +102,7 @@ class AirbnbCrawl(object):
     def save_items(self):
         print('[INFO] Saving the apartments...')
         keys = self.apartment_list[0].keys()
-        with open("aptos_airbnb.csv", 'w') as f:
+        with open("Arquivos/aptos_airbnb.csv", 'w') as f:
             dict_writer = csv.DictWriter(f, keys)
             dict_writer.writeheader()
             dict_writer.writerows(self.apartment_list)
