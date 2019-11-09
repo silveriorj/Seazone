@@ -8,10 +8,10 @@ VIVA_URL_JURERE = 'jurere/?pagina=1#onde=BR-Santa_Catarina-NULL-Florianopolis-Ba
 VIVA_URL_JURERE_INTERNACIONAL = 'jurere-internacional/?pagina=1#onde=BR-Santa_Catarina-NULL-Florianopolis-Barrios-Jurere_Internacional&quartos=2'
 
 # INICIAR CAPTURA DOS DADOS
-print("[INIT] Iniciando captura de dados Airbnb...")
-air_crawler = AirbnbCrawl()
-air_crawler.crawl_list_and_save([AIR_URL_JURERE, AIR_URL_JURERE_INTERNACIONAL])
-
-# print("\n\n[INIT] Iniciando captura de dados Viva Real...")
-# viva_crawler = VivaRealCrawler()
-# viva_crawler.crawl_list_and_save([VIVA_URL_JURERE, VIVA_URL_JURERE_INTERNACIONAL])
+# print("[INIT] Iniciando captura de dados Airbnb...")
+# air_crawler = AirbnbCrawl()
+# air_crawler.crawl_list_and_save([AIR_URL_JURERE, AIR_URL_JURERE_INTERNACIONAL])
+# print('[STOP] REQUEST FINISHED\n\n')
+print("[INIT] Iniciando captura de dados Viva Real...")
+viva_crawler = VivaRealCrawler()
+viva_crawler.crawl_list_and_save([VIVA_URL_JURERE, VIVA_URL_JURERE_INTERNACIONAL])

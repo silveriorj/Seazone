@@ -5,9 +5,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 from webdriver_manager.chrome import ChromeDriverManager
 
-LIST_XPATH = ''
 APTO_XPATH = '//div[@data-type="property"]'
-BASE_URL = 'https://www.vivareal.com.br/venda/santa-catarina/florianopolis/bairros/'
+BASE_URL = 'https://www.vivareal.com.br/aluguel/santa-catarina/florianopolis/bairros/'
+LINK_URL = '//a[@class="property-card__main-link js-carousel-link"]'
 
 def new_aptos(driver, min_len):
     return len(driver.find_elements_by_xpath(APTO_XPATH)) > min_len
@@ -34,12 +34,12 @@ class VivaRealCrawler(object):
         for term in search_list:
             url = BASE_URL + term
             self.crawl_url(url)
-            image_name = (term.split('~')[0]) + ".png"
+            image_name = (term.split('/')[0]) + ".png"
             self.screenshot(image_name)
 
     def crawl_url(self, url):
         self.driver.get(url)
-        self.get_aptos(150)
+        self.get_aptos(50)
         return self.parse_aptos()
 
     def get_aptos(self, num_of_aptos):
@@ -47,7 +47,6 @@ class VivaRealCrawler(object):
         aptos = self.driver.find_elements_by_xpath(APTO_XPATH)
         while len(aptos) < num_of_aptos:
             try:
-                self.go_bottom()
                 WebDriverWait(self.driver, 10).until(
                     lambda driver: new_aptos(driver, len(aptos)))
             except TimeoutException:
@@ -57,38 +56,57 @@ class VivaRealCrawler(object):
             aptos = self.driver.find_elements_by_xpath(APTO_XPATH)
         return aptos
 
-    def go_bottom(self):
-        self.driver.execute_script(
-            "window.scrollTo(0, document.body.scrollHeight);")
-
     def go_top(self):
         self.driver.execute_script(
             "window.scrollTo(0, 0);")
 
     def screenshot(self, image_name):
         self.go_top()
-        self.driver.save_screenshot('VivaReal_'+image_name)
+        self.driver.save_screenshot('./Images/VivaReal_'+image_name)
 
     def parse_aptos(self):
         html = parser.fromstring(self.driver.page_source)
         aptos = html.xpath(APTO_XPATH)
         print('[INFO] Extracting the apartments...')
         for apt in aptos:
-            ad = apt.xpath(
-                ".//*[(@class='_1dss1omb')]/text()")
-            price = apt.xpath(
-                ".//*[(@class='_1jlnvra2')]/descendant-or-self::*"
-                "/text()")
+            per = apt.xpath('.//*[(@class="property-card__price-period")]/text()')
+            url = apt.xpath('.//*[(@href)]/@href')
+            price = apt.xpath('.//*[(@class="property-card__price js-property-card-prices js-property-card__price-small")]/text()')
+            condo = apt.xpath('.//*[(@class="js-condo-price")]/text()')
             try:
-                stars = apt.xpath(
-                    ".//*[(@class='_tghtxy2')]"
-                    "/descendant-or-self::*/text()")
-            except IndexError:
-                stars = "NOVO"
+                url = url[0]
+                url = url.replace(' ','')
+            except:
+                url = ''
+            try:
+                per = per[0]
+                per = per.replace(' ','')
+                per = per.replace('"','')
+                per = per.replace('/','')
+                per = per.replace('\n','')
+            except:
+                per = ''
+            try:
+                price = price[0]
+                price = price.replace(' ','')
+                price = price.replace('"','')
+                price = price.replace('\n','')
+                price = price.replace('R$', '')
+            except:
+                price = 0
+            try:
+                condo = condo[0]
+                condo = condo.replace(' ','')
+                condo = condo.replace('"','')
+                condo = condo.replace('\n','')
+                condo = condo.replace('R$', '')
+            except:
+                condo = 0            
             self.apartment_list.append({
-                "Anúncio": ad,
                 "Preço": price,
-                "Avaliação": stars
+                "Condomínio": condo,
+                "Período": per,
+                "URL": url
             })
         return self.apartment_list
 
