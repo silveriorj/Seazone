@@ -92,12 +92,14 @@ class VivaRealCrawler(object):
                         price = price.replace(' ','')
                         price = price.replace('"','')
                         price = price.replace('\n','')
+                        price = price.replace('.','')
                         price = price.replace('R$', '')
                     except:
                         price = str(0)
                     try:
                         condo = condo[0]
                         condo = condo.replace(' ','')
+                        condo = condo.replace('.','')
                         condo = condo.replace('"','')
                         condo = condo.replace('\n','')
                         condo = condo.replace('R$', '')

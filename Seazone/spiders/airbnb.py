@@ -98,8 +98,7 @@ class AirbnbCrawl(object):
                 stars = stars[0]
             except IndexError:
                 stars = 0
-            print(price)
-            print(stars)
+            gains = str(int(gains)*float(price))
             self.apartment_list.append({
                 "Preço": price,
                 "Avaliação": stars,
@@ -115,24 +114,28 @@ class AirbnbCrawl(object):
         self.driver.get(url)
         for i in range(3):
             html = parser.fromstring(self.driver.page_source)
-            price = html.xpath('.//span[(@class="_doc79r")]/text()')
-            stars = html.xpath('.//div[(@class="_tghtxy2")]/text()')
             tabela = html.xpath('.//div[(@class="_1lds9wb")]')
             for alugado in tabela:
                 aluguel += len(alugado.xpath('.//td[(@class="_z39f86g")]'))
             for x in range (2):
                 try:
-                    WebDriverWait(self.driver, 0.000025).until(
+                    WebDriverWait(self.driver, 5).until(
                             lambda driver: self.wait_and_press())
                 except ElementClickInterceptedException:
-                    WebDriverWait(self.driver, 0.000025).until(
+                    WebDriverWait(self.driver, 5).until(
                             lambda driver: self.wait_and_press())
                 except TimeoutException:
                     break
+        price = html.xpath('.//span[(@class="_doc79r")]/text()')
+        stars = html.xpath('.//div[(@class="_tghtxy2")]/text()')
         return aluguel, price, stars
 
     def wait_and_press(self):
-        self.driver.find_element_by_xpath('.//*[(@class="_1h5uiygl")]').send_keys('\n')
+        try:
+            self.driver.find_element_by_xpath('.//*[(@class="_1h5uiygl")]').send_keys('\n')
+            return True
+        except:
+            return False
 
     def save_items(self):
         print('[INFO] Saving the apartments...')

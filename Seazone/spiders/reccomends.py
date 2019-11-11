@@ -36,11 +36,15 @@ def ReccomendAir(url):
 
 def ReccomendViva(file):
    aptos = pd.read_csv("./Arquivos/"+file+'_aptos.csv')  
+   x = aptos.Preço
+   y = aptos.Condomínio
+   Tendencia(x,y)
    aptos = aptos.sort_values('Condomínio', ascending=True)
    aptos = aptos.head()
    aptos = aptos.sort_values('Preço', ascending=True)
    aptos = aptos.head(3)
    urls = aptos.URL
+   
    ref = 1
    for url in urls:
       image = './Reccomends/VivaReal_'+str(ref)+".png"
@@ -50,3 +54,6 @@ def ReccomendViva(file):
       ref+=1
    driver.close()
 
+def Tendencia(x, y):
+   plt.plot(x, y)
+   plt.savefig('./Tendencia.png', format='png')
