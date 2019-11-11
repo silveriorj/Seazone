@@ -57,7 +57,7 @@ class AirbnbCrawl(object):
         while len(aptos) < num_min:
             try:
                 self.go_bottom()
-                WebDriverWait(self.driver, 2).until(
+                WebDriverWait(self.driver, 1).until(
                     lambda driver: new_aptos(driver, len(aptos)))
             except TimeoutException:
                 # simple exception handling, just move on in case of Timeout
@@ -80,29 +80,26 @@ class AirbnbCrawl(object):
 
     def parse_aptos(self):
         html = parser.fromstring(self.driver.page_source)
-        time.sleep(2)
         aptos = html.xpath(APTOs_LIST)
         for apt in aptos:
-            #self.info_apart(apt)
             url = apt.xpath('.//a[(@class="_15tommw")]/@href')
-            price = apt.xpath('.//span[(@class="_1jlnvra2")]/descendant-or-self::*/text()')
-            stars = apt.xpath('.//*[(@class="_tghtxy2")]/text()')
-            print(price) # For Simple Debbuging PRICING
             try:
                 url = url[0]
             except IndexError:
                 url = 'NaN'
+            gains, price, stars = self.info_apart(url)
+            try:
+                price = price[0]
+                price = price.replace('R$', '')
+                price = price.replace('.','')
+            except IndexError:
+                price = 0 
             try:
                 stars = stars[0]
             except IndexError:
                 stars = 0
-            try:
-                price = price[2]
-                price = price.replace('.', '')
-                price = price.replace('R$', '')
-            except IndexError:
-                price = apt.xpath('.//span[(@class="_1jlnvra2")]')
-            gains = self.info_apart(url)
+            print(price)
+            print(stars)
             self.apartment_list.append({
                 "Preço": price,
                 "Avaliação": stars,
@@ -118,19 +115,21 @@ class AirbnbCrawl(object):
         self.driver.get(url)
         for i in range(3):
             html = parser.fromstring(self.driver.page_source)
+            price = html.xpath('.//span[(@class="_doc79r")]/text()')
+            stars = html.xpath('.//div[(@class="_tghtxy2")]/text()')
             tabela = html.xpath('.//div[(@class="_1lds9wb")]')
             for alugado in tabela:
                 aluguel += len(alugado.xpath('.//td[(@class="_z39f86g")]'))
             for x in range (2):
                 try:
-                    WebDriverWait(self.driver, 0.025).until(
+                    WebDriverWait(self.driver, 0.000025).until(
                             lambda driver: self.wait_and_press())
                 except ElementClickInterceptedException:
-                    WebDriverWait(self.driver, 0.025).until(
+                    WebDriverWait(self.driver, 0.000025).until(
                             lambda driver: self.wait_and_press())
                 except TimeoutException:
                     break
-        return aluguel
+        return aluguel, price, stars
 
     def wait_and_press(self):
         self.driver.find_element_by_xpath('.//*[(@class="_1h5uiygl")]').send_keys('\n')
