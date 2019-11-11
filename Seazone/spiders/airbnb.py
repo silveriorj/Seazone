@@ -64,7 +64,6 @@ class AirbnbCrawl(object):
                 aptos = self.driver.find_elements_by_xpath(APTOs_LIST)
                 break
             aptos = self.driver.find_elements_by_xpath(APTOs_LIST)
-        print(len(aptos))
         return aptos
 
     def go_bottom(self):
