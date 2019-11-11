@@ -57,13 +57,14 @@ class AirbnbCrawl(object):
         while len(aptos) < num_min:
             try:
                 self.go_bottom()
-                WebDriverWait(self.driver, 1).until(
+                WebDriverWait(self.driver, 10).until(
                     lambda driver: new_aptos(driver, len(aptos)))
             except TimeoutException:
                 # simple exception handling, just move on in case of Timeout
                 aptos = self.driver.find_elements_by_xpath(APTOs_LIST)
                 break
             aptos = self.driver.find_elements_by_xpath(APTOs_LIST)
+        print(len(aptos))
         return aptos
 
     def go_bottom(self):
