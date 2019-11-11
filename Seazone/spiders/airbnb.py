@@ -52,18 +52,19 @@ class AirbnbCrawl(object):
         print('[INFO] Parsing... Wait a fell minutes...')
         return self.parse_aptos()
 
-    def get_aptos(self, num_of_aptos):
+    def get_aptos(self, num_min):
         aptos = self.driver.find_elements_by_xpath(APTOs_LIST)
-        while len(aptos) < num_of_aptos:
+        while len(aptos) < num_min:
             try:
                 self.go_bottom()
-                WebDriverWait(self.driver, 0.2).until(
+                WebDriverWait(self.driver, 10).until(
                     lambda driver: new_aptos(driver, len(aptos)))
             except TimeoutException:
                 # simple exception handling, just move on in case of Timeout
                 aptos = self.driver.find_elements_by_xpath(APTOs_LIST)
                 break
-            aptos = self.driver.find_elements_by_xpath(APTOs_LIST)
+            aptos = self.driver.find_elements_by_xpath(APTOs_LIST)  
+        print(len(aptos))
         return aptos
 
     def go_bottom(self):
@@ -85,10 +86,11 @@ class AirbnbCrawl(object):
             #self.info_apart(apt)
             url = apt.xpath('.//a[(@class="_15tommw")]/@href')
             price = apt.xpath(
-                ".//*[(@class='_1jlnvra2')]/text()")
+                ".//*[(@class='_1jlnvra2')]/descendant-or-self::*"
+                "/text()")
             stars = apt.xpath('.//*[(@class="_tghtxy2")]/text()')
-            print(url)   # For Simple Debbuging
-            print(price) # For Simple Debbuging
+            type(url)   # For Simple Debbuging URL
+            print(price) # For Simple Debbuging PRICING
             try:
                 url = url[0]
             except IndexError:
@@ -98,11 +100,11 @@ class AirbnbCrawl(object):
             except IndexError:
                 stars = 'NOVO'
             try:
-                price = price[1]
+                price = price[2]
                 price = price.replace('.', '')
                 price = price.replace('R$', '')
             except IndexError:
-                price = apt.xpath('.//span[(@class="_1jlnvra2")]/text()')
+                price = apt.xpath('.//span[(@class="_1jlnvra2")]')
             gains = self.info_apart(url)
             print(gains)
             self.apartment_list.append({
@@ -125,10 +127,10 @@ class AirbnbCrawl(object):
                 aluguel += len(alugado.xpath('.//td[(@class="_z39f86g")]'))
             for x in range (2):
                 try:
-                    WebDriverWait(self.driver, 0.025).until(
+                    WebDriverWait(self.driver, 0.0025).until(
                             lambda driver: self.wait_and_press())
                 except ElementClickInterceptedException:
-                    WebDriverWait(self.driver, 0.025).until(
+                    WebDriverWait(self.driver, 0.0025).until(
                             lambda driver: self.wait_and_press())
                 except TimeoutException:
                     break
