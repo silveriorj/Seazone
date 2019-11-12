@@ -6,6 +6,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import WebDriverException
+import numpy as np
+import seaborn as sns
 
 
 options = webdriver.ChromeOptions()
@@ -20,7 +22,7 @@ BASE_VIVA = 'https://www.vivareal.com.br'
 
 
 def ReccomendAir(url):
-   aptos = pd.read_csv("./Arquivos/"+url+'_aptos.csv')  
+   aptos = pd.read_csv("./Arquivos/"+url+'_aptos.csv')
    aptos = aptos.sort_values('Avaliação', ascending=False)
    aptos = aptos.head()
    aptos = aptos.sort_values('Preço', ascending=True)
@@ -35,10 +37,7 @@ def ReccomendAir(url):
       ref+=1
 
 def ReccomendViva(file):
-   aptos = pd.read_csv("./Arquivos/"+file+'_aptos.csv')  
-   x = aptos.Preço
-   y = aptos.Condomínio
-   Tendencia(x,y)
+   aptos = pd.read_csv("./Arquivos/"+file+'_aptos.csv')
    aptos = aptos.sort_values('Condomínio', ascending=True)
    aptos = aptos.head()
    aptos = aptos.sort_values('Preço', ascending=True)
@@ -54,6 +53,21 @@ def ReccomendViva(file):
       ref+=1
    driver.close()
 
-def Tendencia(x, y):
-   plt.plot(x, y)
+def Tendencia():
+   list = pd.read_csv("./Arquivos/airbnb_aptos.csv")
+   list = list.sort_values('Avaliação', ascending=False)
+   x = list.Preço
+   y = list.Avaliação
+   y2 = []
+   for a in y:
+      a = a.replace('"','')
+      a = a.replace(',','.')
+      y2.append(float(a))
+   plt.title('Gráfico de Tendência')
+   plt.xlabel('Avaliações')
+   plt.ylabel('Valor do Aluguel')
+   plt.bar(y2, x, label='Avaliações')
+   plt.legend(loc='best')
+   plt.show()
    plt.savefig('./Tendencia.png', format='png')
+

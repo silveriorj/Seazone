@@ -96,6 +96,7 @@ class AirbnbCrawl(object):
                 price = 0 
             try:
                 stars = stars[0]
+                stars = stars.replace('"', '')
             except IndexError:
                 stars = 0
             gains = str(int(gains)*float(price))
