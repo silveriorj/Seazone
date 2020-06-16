@@ -1,4 +1,4 @@
-# Seazone
+# Web Scraper
 
 ## Desafio de captura de dados utilizando Web Crawling
 O desafio consiste em um sistema que capture dados de anúncios dos sites [Airbnb](https://airbnb.com.br) e [Viva Real](https://vivareal.com.br).
